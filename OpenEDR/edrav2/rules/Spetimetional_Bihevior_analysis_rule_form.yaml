@@ -1,0 +1,37 @@
+rule_id: "SAS-BEHAVIOR-MULTIPLE-001"
+name: "SAS 3D Spatial Trajectory Detection"
+author: "Chessekingdog"
+description: "High-speed behavioral rule mapping process execution into 3D vectors. Detects multiple threat profiles instantly using bounding box thresholds."
+rule_type: "spatial_behavior_heuristics"
+version: "1.0"
+
+performance:
+  evaluation_mode: "threshold_limits"
+  time_window_ms: 1000
+
+threat_trajectories:
+  # 1. THREAT: Ransomware Profile
+  - threat_name: "Behavior.Ransomware.Spiral"
+    description: "High volume of file writes (X) combined with high entropy (Z) and low file reads (Y)."
+    limits:
+      min_x: 85.0
+      max_y: 20.0
+      min_z: 90.0
+    action: "terminate_and_quarantine"
+
+  # 2. THREAT: Process Hollowing / Code Injection Profile
+  - threat_name: "Behavior.Memory.Injection"
+    description: "Spike in remote memory allocation (Y) and cross-process thread creation (W)."
+    limits:
+      min_y: 75.0
+      min_w: 80.0
+    action: "terminate"
+
+  # 3. THREAT: Spyware / Keylogger Profile
+  - threat_name: "Behavior.Spyware.StealthLine"
+    description: "Constant low-level API hooking (X) with periodic network uploads (Z)."
+    limits:
+      min_x: 40.0
+      max_x: 60.0
+      min_z: 50.0
+    action: "alert_and_block_network"
